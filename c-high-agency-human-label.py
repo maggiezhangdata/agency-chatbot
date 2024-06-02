@@ -19,6 +19,8 @@ speed = 200
 min_duration = 4
 max_duration = 15
 
+partner_name = '星辰'
+
 from streamlit_image_select import image_select
 # Avatar selection
 avatars = [
@@ -67,6 +69,8 @@ content = st.empty()
 
 if 'user_avatar' not in st.session_state:
     st.session_state.user_avatar = avatars[0]
+if 'user_name' not in st.session_state:
+    st.session_state.user_name = "你"
 
 
 if st.session_state.page == 1:
@@ -84,40 +88,54 @@ if st.session_state.page == 1:
     # insert gap 
     st.empty()
     st.empty()
+    st.empty()
+    st.empty()
+    st.empty()
     
     match_placeholder = st.empty()
-    match_placeholder.markdown("\n\n\n\n\n\n\n\n\n\n #### :red[正在匹配聊天搭档 ......]", unsafe_allow_html=True)
+    match_placeholder.markdown("\n\n\n\n\n\n\n\n\n\n  ##### :red[正在为你匹配聊天搭档 ......]", unsafe_allow_html=True)
     progress_text = ":orange[:hourglass:]"
     my_bar = st.progress(0, text=progress_text)
     
     for percent_complete in range(100):
-        time.sleep(0.04)
+        # random progress
+        import random
+        sleep_time = random.uniform(0.01, 0.1)
+        time.sleep(sleep_time)
         my_bar.progress(percent_complete + 1, text=progress_text)
+    sucess_placeholder = st.empty()
+    sucess_placeholder.success("聊天搭档已匹配成功！正在进入聊天界面...")
     time.sleep(3)
+    
     st.empty()
     my_bar.empty()
     avatar_placeholder.empty()
-    sucess_placeholder = st.empty()
-    sucess_placeholder.success("聊天搭档已匹配成功！")
-    next_page()
-    sucess_placeholder.empty()
     match_placeholder.empty()
+    sucess_placeholder.empty()
+    next_page()
+    
     
 
 if st.session_state.page == 0:
 # Avatar selection component
     st.title("欢迎来到聊天室")
-    st.subheader("请先选择一个头像")
+    
+    st.markdown("#### 请先选择一个头像")
     selected_index = image_select(
         label="",
         images=avatars,
         return_value="index"
     )
-
     st.session_state.user_avatar = avatars[selected_index]
+    st.markdown("\n \n \n")
+    st.markdown("#### 请输入你的昵称")
+    text_input = st.text_input(
+        "👇",
+    )
+    st.session_state.user_name = text_input
     # pass on user_avatar to the next page
-    
-    # create a container with certain width to hold the button
+        
+   
     
     if st.button("确定", on_click=next_page, type = "primary", use_container_width=True):
         # show sucess and then navigate to the next page
@@ -138,25 +156,9 @@ elif st.session_state.page == 2:
     # Automatically send a "hello" message when the chat begins
 
     # This is where we create a placeholder for the countdown timer
-    st.sidebar.markdown("#### 如果您不知道和机器人聊些什么，可以参考下列话题：")
+    st.sidebar.markdown("浙江大学的校园内经常出现自行车和电动车混行导致的交通混乱，尤其在上下课高峰时段，不仅影响校园的交通效率，也带来了安全隐患。假设你们是浙江大学的学生会成员，负责提出解决方案来优化校园内的非机动车交通。")
 
 
-    on = st.sidebar.toggle("显示聊天话题")
-    topics = ["探讨某一个专业知识点", 
-            "交流如何提高学习效率", 
-            "探讨近期新闻或社会议题", 
-            "交流自己的财务情况或理财相关", 
-            "交流就业状况或职业生涯规划", 
-            "交流个人生活安排，如旅游、健身、饮食作息等", 
-            "探讨个人兴趣爱好", 
-            "探讨情感话题或寻求恋爱建议", 
-            "交流你期待的理想生活或人生目标",
-            '交流人际关系如朋辈关系、师生关系或与父母的关系等']
-    topic_str = "* " + "\n* ".join(topics)
-    if on:
-        st.sidebar.write("\n" + topic_str)
-    else:
-        st.sidebar.write("")
 
     st.sidebar.markdown("#### 请在这里复制对话编号 \n")
     timer_placeholder = st.sidebar.empty()
@@ -186,14 +188,25 @@ elif st.session_state.page == 2:
 
     if "messages" not in st.session_state:
         st.session_state["messages"] = []
-
+    st.empty()
+    st.empty()
+    st.empty()
     for message in st.session_state.messages:
         if message["role"] == "user":
             with st.chat_message(message["role"], avatar=user_avatar):
-                st.markdown(message["content"]) 
+                # st.markdown(message["content"]) 
+                user_input = message["content"]
+                user_name = st.session_state.user_name
+                st.markdown("<span style='color: red;'>" + user_name + "：</span>" + user_input, unsafe_allow_html=True)
+                
         else:
             with st.chat_message(message["role"],avatar=partner_avatar):
-                st.markdown(message["content"], unsafe_allow_html=True)
+                # st.markdown(message["content"], unsafe_allow_html=True)
+                
+                partner_input = message["content"]
+                st.markdown("<span style='color: red;'>" + partner_name + "：</span>" + partner_input, unsafe_allow_html=True)
+                
+                
 
 
             
@@ -241,7 +254,10 @@ elif st.session_state.page == 2:
         refresh_timer()
         user_input = st.chat_input("")
         
-  
+
+            
+                
+                        
         
         
         if user_input:
@@ -257,7 +273,10 @@ elif st.session_state.page == 2:
             # st.rerun()
 
             with st.chat_message("user", avatar=user_avatar):
-                st.markdown(user_input)
+                # st.markdown(user_input)
+                # user_input = message["content"]
+                user_name = st.session_state.user_name
+                st.markdown("<span style='color: red;'>" + user_name + "：</span>" + user_input, unsafe_allow_html=True)
 
             with st.chat_message("assistant",avatar=partner_avatar):
                 message_placeholder = st.empty()
@@ -314,7 +333,9 @@ elif st.session_state.page == 2:
                         waiting_message.empty()
                         for char in chars:
                             displayed_message += char
-                            message_placeholder.markdown(displayed_message)
+                            # message_placeholder.markdown(displayed_message)
+                            
+                            message_placeholder.markdown("<span style='color: red;'>" + partner_name + "：</span>" + displayed_message, unsafe_allow_html=True)
                             time.sleep(delay_per_char)  # Wait for calculated delay time
                         break
                     except Exception as e:
@@ -342,6 +363,8 @@ elif st.session_state.page == 2:
                 st.session_state.messages.append(
                     {"role": "assistant", "content": full_response}
                 )
+        st.empty()
+        st.empty()
 
     else:
         # st.sidebar.info(st.session_state.thread_id)
