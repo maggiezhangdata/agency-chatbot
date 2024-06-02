@@ -18,6 +18,7 @@ speed = 200
 
 min_duration = 4
 max_duration = 15
+human_speed = 120
 
 partner_name = '星辰'
 
@@ -91,6 +92,8 @@ if st.session_state.page == 1:
     st.empty()
     st.empty()
     st.empty()
+    st.empty()
+    st.empty()
     
     match_placeholder = st.empty()
     match_placeholder.markdown("\n\n\n\n\n\n\n\n\n\n  ##### :red[正在为你匹配聊天搭档 ......]", unsafe_allow_html=True)
@@ -104,14 +107,34 @@ if st.session_state.page == 1:
         time.sleep(sleep_time)
         my_bar.progress(percent_complete + 1, text=progress_text)
     sucess_placeholder = st.empty()
-    sucess_placeholder.success("聊天搭档已匹配成功！正在进入聊天界面...")
-    time.sleep(3)
+    sucess_placeholder.success(f"聊天搭档已匹配成功！")
+    
+    
+    
+    
+    
+    col1, col2 = st.columns([0.3, 0.7])
+    with col1:
+        st.markdown("\n")
+        matched_info_placeholder = st.empty()
+        matched_info_placeholder.markdown(f" \n 为你匹配到的搭档是 :blue[{partner_name}]", unsafe_allow_html=True)
+    with col2:
+        matched_avatar_placeholder = st.empty()
+        matched_avatar_placeholder.image(partner_avatar, width=50)
+        
+    with st.spinner("正在为你开启对话..."):
+        time.sleep(3)
+    
+    # time.sleep(3)
     
     st.empty()
     my_bar.empty()
     avatar_placeholder.empty()
     match_placeholder.empty()
     sucess_placeholder.empty()
+    match_placeholder.empty()
+    matched_info_placeholder.empty()
+    matched_avatar_placeholder.empty()
     next_page()
     
     
@@ -132,7 +155,8 @@ if st.session_state.page == 0:
     text_input = st.text_input(
         "👇",
     )
-    st.session_state.user_name = text_input
+    if text_input:
+        st.session_state.user_name = text_input
     # pass on user_avatar to the next page
         
    
@@ -146,6 +170,10 @@ if st.session_state.page == 0:
 elif st.session_state.page == 2:
     
     user_avatar = st.session_state.user_avatar
+    
+    # def a delay display function
+
+        
 
     
 
@@ -174,9 +202,10 @@ elif st.session_state.page == 2:
                 minutes_new = int(minutes)
                 seconds = int((minutes - int(minutes)) * 60)
                 return f"{minutes_new} 分钟 {seconds} 秒"
+            
             if remaining_time > 0:
                 timer_placeholder.markdown(
-                    f"##### 对话编号会在<strong><span style='color: #8B0000;'> {min_duration}分钟 </span></strong>之后出现。\n",
+                    f"##### 对话编号会在<strong><span style='color: #8B0000;'> {format_time(remaining_time)} </span></strong>之后出现。\n",
                     unsafe_allow_html=True)
                 
             else:
@@ -232,6 +261,10 @@ elif st.session_state.page == 2:
         num_dots = (current_dots % 6) + 1  # Cycle through 1 to 3 dots
         placeholder.markdown("对方正在输入" + "." * num_dots)
         return num_dots
+    
+
+            
+            
 
 
 
@@ -283,27 +316,6 @@ elif st.session_state.page == 2:
                 waiting_message = st.empty()  # Create a new placeholder for the waiting message
                 dots = 0
 
-    #------------------------------------------------------------------------------------------------------------------------------#
-                def format_response(response):
-                    """
-                    Formats the response to handle bullet points and new lines.
-                    Targets both ordered (e.g., 1., 2.) and unordered (e.g., -, *, •) bullet points.
-                    """
-                    # Split the response into lines
-                    lines = response.split('\n')
-                    
-                    formatted_lines = []
-                    for line in lines:
-                        # Check if the line starts with a bullet point (ordered or unordered)
-                        if re.match(r'^(\d+\.\s+|[-*•]\s+)', line):
-                            formatted_lines.append('\n' + line)
-                        else:
-                            formatted_lines.append(line)
-
-                    # Join the lines back into a single string
-                    formatted_response = '\n'.join(formatted_lines)
-
-                    return formatted_response.strip()
             
                 import time
                 max_attempts = 2
@@ -319,25 +331,50 @@ elif st.session_state.page == 2:
                         while True:
                             run_status = openai.beta.threads.runs.retrieve(thread_id=st.session_state.thread_id,run_id=run.id)
                             if run_status.status == "completed":
+                                finish_time = time.time()
                                 break
                             dots = update_typing_animation(waiting_message, dots)  # Update typing animation
                             time.sleep(0.3) 
                         # Retrieve and display messages
                         messages = openai.beta.threads.messages.list(thread_id=st.session_state.thread_id)
                         full_response = messages.data[0].content[0].text.value
-                        full_response = format_response(full_response)  # Format for bullet points
-                        chars = list(full_response)
-                        # speed = 20  # Display 5 Chinese characters per second
-                        delay_per_char = 1.0 / speed
-                        displayed_message = ""
-                        waiting_message.empty()
-                        for char in chars:
-                            displayed_message += char
-                            # message_placeholder.markdown(displayed_message)
+                        
+                        def delay_display(text):
+                            # calculate the number of characters in the text
+                            # get number of chinese characters
+                            # return delay time in seconds
+                            char_length = len(text)
+                            print(f'char_length: {char_length}')
+                            delay = char_length / human_speed * 60
+                            return delay
+                        
+                        wait_deplay = delay_display(full_response)
+                        print(f'wait_deplay: {wait_deplay}')
+                        
+                        def display_typing(placeholder, duration, gap):
+                            # display typing message for a certain duration
+                            interval = int(duration / (1/gap)) + 1
+                            for i in range(interval):
+                                num_dots = (i % 6) + 1  # Cycle through 1 to 3 dots
+                                placeholder.markdown("对方正在输入" + "." * num_dots)
+                                time.sleep(gap)
+                                placeholder.empty()
+                        
+                        display_typing(waiting_message, int(wait_deplay), 0.5)
                             
-                            message_placeholder.markdown("<span style='color: red;'>" + partner_name + "：</span>" + displayed_message, unsafe_allow_html=True)
-                            time.sleep(delay_per_char)  # Wait for calculated delay time
+                        
+                        
+                        
+                        waiting_message.empty()
+                        
+                        
+                        
+                        
+                        
+                        message_placeholder.markdown("<span style='color: red;'>" + partner_name + "：</span>" + full_response, unsafe_allow_html=True)
                         break
+                    
+                    
                     except Exception as e:
                         print(e)
                         attempt += 1
