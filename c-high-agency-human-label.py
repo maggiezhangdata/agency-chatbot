@@ -12,7 +12,7 @@ openai.default_headers = {"OpenAI-Beta": "assistants=v2"}
 # # client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # client = OpenAI(default_headers={"OpenAI-Beta": "assistants=v2"}, api_key=st.secrets["OPENAI_API_KEY"])
-assistant_id = st.secrets["a-high-agency-bot-label"]
+assistant_id = st.secrets["c-high-agency-human-label"]
 print(assistant_id)
 speed = 200
 
@@ -20,7 +20,10 @@ min_duration = 4
 max_duration = 15
 human_speed = 120
 
-partner_name = '星辰'
+partner_names = ['星辰','暖阳下的猫','梦之尘','听雨','JM','Mars','海','蓝色星期五']
+# random select a partner name
+import random
+partner_name = random.choice(partner_names)
 
 from streamlit_image_select import image_select
 # Avatar selection
@@ -32,9 +35,15 @@ avatars = [
     # "animal_avatar/animal_avatar_5.png",
 ]
 
-partner_avatars = ["https://ooo.0x0.ooo/2024/06/03/OJGgMM.png",
-                   "https://ooo.0x0.ooo/2024/06/03/OJGJ8I.png"]
-partner_avatar = partner_avatars[0]
+
+partner_avatars = ['https://ooo.0x0.ooo/2024/06/03/OJGQMg.png',
+'https://ooo.0x0.ooo/2024/06/03/OJGcXK.png',
+'https://ooo.0x0.ooo/2024/06/03/OJGE0l.png',
+'https://ooo.0x0.ooo/2024/06/03/OJGS7B.png',
+'https://ooo.0x0.ooo/2024/06/03/OJG0Hs.png',
+'https://ooo.0x0.ooo/2024/06/03/OJGsza.png',]
+
+partner_avatar = random.choice(partner_avatars)
 
 if "thread_id" not in st.session_state:
     thread = openai.beta.threads.create()

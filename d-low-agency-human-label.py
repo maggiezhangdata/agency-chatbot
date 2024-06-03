@@ -12,17 +12,18 @@ openai.default_headers = {"OpenAI-Beta": "assistants=v2"}
 # # client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # client = OpenAI(default_headers={"OpenAI-Beta": "assistants=v2"}, api_key=st.secrets["OPENAI_API_KEY"])
-assistant_id = st.secrets["b-low-agency-bot-label"]
+assistant_id = st.secrets["d-low-agency-human-label"]
 print(assistant_id)
 speed = 200
 
 min_duration = 4
 max_duration = 15
 human_speed = 120
-page2_stay = 6
 
-partner_name = '星辰'
-bot_name = '小晨同学'
+partner_names = ['星辰','暖阳下的猫','梦之尘','听雨','JM','Mars','海','蓝色星期五']
+# random select a partner name
+import random
+partner_name = random.choice(partner_names)
 
 from streamlit_image_select import image_select
 # Avatar selection
@@ -34,9 +35,14 @@ avatars = [
     # "animal_avatar/animal_avatar_5.png",
 ]
 
-partner_avatars = ["https://ooo.0x0.ooo/2024/06/03/OJG4f6.png",
-                   "https://ooo.0x0.ooo/2024/06/03/OJG4f6.png"]
-partner_avatar = partner_avatars[0]
+partner_avatars = ['https://ooo.0x0.ooo/2024/06/03/OJGQMg.png',
+'https://ooo.0x0.ooo/2024/06/03/OJGcXK.png',
+'https://ooo.0x0.ooo/2024/06/03/OJGE0l.png',
+'https://ooo.0x0.ooo/2024/06/03/OJGS7B.png',
+'https://ooo.0x0.ooo/2024/06/03/OJG0Hs.png',
+'https://ooo.0x0.ooo/2024/06/03/OJGsza.png',]
+
+partner_avatar = random.choice(partner_avatars)
 
 if "thread_id" not in st.session_state:
     thread = openai.beta.threads.create()
@@ -100,7 +106,7 @@ if st.session_state.page == 1:
     st.empty()
     
     match_placeholder = st.empty()
-    match_placeholder.markdown(f"\n\n\n\n\n\n\n\n\n\n  ##### :red[请与机器人{bot_name}合作，进行对话。正在设置机器人......]", unsafe_allow_html=True)
+    match_placeholder.markdown("\n\n\n\n\n\n\n\n\n\n  ##### :red[正在为你匹配其他实验被试......]", unsafe_allow_html=True)
     progress_text = ":orange[:hourglass:]"
     my_bar = st.progress(0, text=progress_text)
     
@@ -111,7 +117,7 @@ if st.session_state.page == 1:
         time.sleep(sleep_time)
         my_bar.progress(percent_complete + 1, text=progress_text)
     sucess_placeholder = st.empty()
-    sucess_placeholder.success(f"机器人{bot_name}已设置成功！请和它共同完成实验任务。")
+    sucess_placeholder.success(f"搭档已匹配成功！请和他共同完成实验任务。")
     
     
     
@@ -121,13 +127,13 @@ if st.session_state.page == 1:
     with col1:
         st.markdown("\n")
         matched_info_placeholder = st.empty()
-        matched_info_placeholder.markdown(f" \n 你的搭档是 :blue[机器人{bot_name}]", unsafe_allow_html=True)
+        matched_info_placeholder.markdown(f" \n 为你匹配到的搭档是 :blue[{partner_name}]", unsafe_allow_html=True)
     with col2:
         matched_avatar_placeholder = st.empty()
         matched_avatar_placeholder.image(partner_avatar, width=50)
         
     with st.spinner("正在为你开启对话..."):
-        time.sleep(page2_stay)
+        time.sleep(6)
     
     # time.sleep(3)
     
@@ -237,7 +243,7 @@ elif st.session_state.page == 2:
                 # st.markdown(message["content"], unsafe_allow_html=True)
                 
                 partner_input = message["content"]
-                st.markdown("<span style='color: #235789;'>" + bot_name + "：</span>" + partner_input, unsafe_allow_html=True)
+                st.markdown("<span style='color: red;'>" + partner_name + "：</span>" + partner_input, unsafe_allow_html=True)
                 
                 
 
@@ -263,7 +269,7 @@ elif st.session_state.page == 2:
         current_dots (int): Current number of dots in the animation.
         """
         num_dots = (current_dots % 6) + 1  # Cycle through 1 to 3 dots
-        placeholder.markdown("机器人回答生成中" + "." * num_dots)
+        placeholder.markdown("对方正在输入" + "." * num_dots)
         return num_dots
     
 
@@ -343,19 +349,6 @@ elif st.session_state.page == 2:
                         messages = openai.beta.threads.messages.list(thread_id=st.session_state.thread_id)
                         full_response = messages.data[0].content[0].text.value
                         
-                        chars = list(full_response)
-                        # speed = 20  # Display 5 Chinese characters per second
-                        delay_per_char = 1.0 / speed
-                        displayed_message = ""
-                        waiting_message.empty()
-                        for char in chars:
-                            displayed_message += char
-                            # message_placeholder.markdown(displayed_message)
-                            message_placeholder.markdown("<span style='color: #235789;'>" + bot_name + "：</span>" + displayed_message, unsafe_allow_html=True)
-
-                            time.sleep(delay_per_char)  # Wait for calculated delay time
-                        break
-                        
                         def delay_display(text):
                             # calculate the number of characters in the text
                             # get number of chinese characters
@@ -366,18 +359,18 @@ elif st.session_state.page == 2:
                             return delay
                         
                         wait_deplay = delay_display(full_response)
-
+                        print(f'wait_deplay: {wait_deplay}')
                         
                         def display_typing(placeholder, duration, gap):
                             # display typing message for a certain duration
                             interval = int(duration / (1/gap)) + 1
                             for i in range(interval):
                                 num_dots = (i % 6) + 1  # Cycle through 1 to 3 dots
-                                placeholder.markdown("机器人回答生成中" + "." * num_dots)
+                                placeholder.markdown("对方正在输入" + "." * num_dots)
                                 time.sleep(gap)
                                 placeholder.empty()
                         
-                        # display_typing(waiting_message, int(wait_deplay), 0.5)
+                        display_typing(waiting_message, int(wait_deplay), 0.5)
                             
                         
                         
@@ -388,7 +381,8 @@ elif st.session_state.page == 2:
                         
                         
                         
-                        
+                        message_placeholder.markdown("<span style='color: red;'>" + partner_name + "：</span>" + full_response, unsafe_allow_html=True)
+                        break
                     
                     
                     except Exception as e:
