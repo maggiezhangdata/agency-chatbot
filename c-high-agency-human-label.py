@@ -123,7 +123,7 @@ if st.session_state.page == 1:
         matched_avatar_placeholder.image(partner_avatar, width=50)
         
     with st.spinner("正在为你开启对话..."):
-        time.sleep(3)
+        time.sleep(180)
     
     # time.sleep(3)
     
