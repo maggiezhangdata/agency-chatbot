@@ -20,6 +20,8 @@ min_duration = 4
 max_duration = 15
 human_speed = 120
 
+page2_stay = 6
+
 partner_names = ['星辰','暖阳下的猫','梦之尘','听雨','JM','Mars','海','蓝色星期五']
 # random select a partner name
 import random
@@ -133,7 +135,7 @@ if st.session_state.page == 1:
         matched_avatar_placeholder.image(partner_avatar, width=50)
         
     with st.spinner("正在为你开启对话..."):
-        time.sleep(6)
+        time.sleep(page2_stay)
     
     # time.sleep(3)
     
