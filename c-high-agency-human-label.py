@@ -25,14 +25,16 @@ partner_name = '星辰'
 from streamlit_image_select import image_select
 # Avatar selection
 avatars = [
-    "animal_avatar/animal_avatar_1.png",  # Replace these URLs with your actual avatar image paths
-    "animal_avatar/animal_avatar_2.png",
-    "animal_avatar/animal_avatar_3.png",
-    "animal_avatar/animal_avatar_4.png",
+    "https://ooo.0x0.ooo/2024/06/03/OJGv0r.png",  # Replace these URLs with your actual avatar image 
+    "https://ooo.0x0.ooo/2024/06/03/OJGm1G.png",
+    "https://ooo.0x0.ooo/2024/06/03/OJGpH1.png",
+    "https://ooo.0x0.ooo/2024/06/03/OJGZKc.png",
     # "animal_avatar/animal_avatar_5.png",
 ]
 
-partner_avatar = "animal_avatar/partner_avatar.png"
+partner_avatars = ["https://ooo.0x0.ooo/2024/06/03/OJGgMM.png",
+                   "https://ooo.0x0.ooo/2024/06/03/OJGJ8I.png"]
+partner_avatar = partner_avatars[0]
 
 if "thread_id" not in st.session_state:
     thread = openai.beta.threads.create()
