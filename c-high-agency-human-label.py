@@ -54,7 +54,14 @@ partner_avatars = ['https://ooo.0x0.ooo/2024/06/03/OJGQMg.png',
 'https://ooo.0x0.ooo/2024/06/03/OJG0Hs.png',
 'https://ooo.0x0.ooo/2024/06/03/OJGsza.png',]
 
-partner_avatar = random.choice(partner_avatars)
+if 'partner_avatar' not in st.session_state:
+    st.session_state.partner_avatar = None
+
+if not st.session_state.partner_avatar:
+    st.session_state.partner_avatar = random.choice(partner_avatars)
+
+partner_avatar = st.session_state.partner_avatar
+
 
 if "thread_id" not in st.session_state:
     thread = openai.beta.threads.create()

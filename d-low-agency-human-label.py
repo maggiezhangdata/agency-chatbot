@@ -22,10 +22,21 @@ human_speed = 120
 
 page2_stay = 6
 
-partner_names = ['星辰','暖阳下的猫','梦之尘','听雨','JM','Mars','海','蓝色星期五']
-# random select a partner name
 import random
-partner_name = random.choice(partner_names)
+
+partner_names = ['星辰','暖阳下的猫','梦之尘','听雨','JM','Mars','海','蓝色星期五']
+
+if 'partner_names' not in st.session_state:
+    st.session_state.partner_names = None
+# random select a partner name
+
+if not st.session_state.partner_names:
+    partner_name = random.choice(partner_names)
+    st.session_state.partner_names = partner_name
+    
+partner_name = st.session_state.partner_names
+
+
 
 from streamlit_image_select import image_select
 # Avatar selection
@@ -37,6 +48,7 @@ avatars = [
     # "animal_avatar/animal_avatar_5.png",
 ]
 
+
 partner_avatars = ['https://ooo.0x0.ooo/2024/06/03/OJGQMg.png',
 'https://ooo.0x0.ooo/2024/06/03/OJGcXK.png',
 'https://ooo.0x0.ooo/2024/06/03/OJGE0l.png',
@@ -44,7 +56,13 @@ partner_avatars = ['https://ooo.0x0.ooo/2024/06/03/OJGQMg.png',
 'https://ooo.0x0.ooo/2024/06/03/OJG0Hs.png',
 'https://ooo.0x0.ooo/2024/06/03/OJGsza.png',]
 
-partner_avatar = random.choice(partner_avatars)
+if 'partner_avatar' not in st.session_state:
+    st.session_state.partner_avatar = None
+
+if not st.session_state.partner_avatar:
+    st.session_state.partner_avatar = random.choice(partner_avatars)
+
+partner_avatar = st.session_state.partner_avatar
 
 if "thread_id" not in st.session_state:
     thread = openai.beta.threads.create()
