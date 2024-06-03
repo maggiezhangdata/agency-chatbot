@@ -20,10 +20,21 @@ min_duration = 4
 max_duration = 15
 human_speed = 120
 page2_stay = 6
-partner_names = ['星辰','暖阳下的猫','梦之尘','听雨','JM','Mars','海','蓝色星期五']
-# random select a partner name
 import random
-partner_name = random.choice(partner_names)
+
+partner_names = ['星辰','暖阳下的猫','梦之尘','听雨','JM','Mars','海','蓝色星期五']
+
+if 'partner_names' not in st.session_state:
+    st.session_state.partner_names = None
+# random select a partner name
+
+if not st.session_state.partner_names:
+    partner_name = random.choice(partner_names)
+    st.session_state.partner_names = partner_name
+    
+partner_name = st.session_state.partner_names
+
+
 
 from streamlit_image_select import image_select
 # Avatar selection
