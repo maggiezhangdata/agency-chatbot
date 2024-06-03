@@ -80,7 +80,7 @@ if st.session_state.page == 1:
     st.empty()
     # create an ampty placeholder
     avatar_placeholder = st.empty()
-    avatar_placeholder.markdown("#### 头像设置成功，现在可以开始聊天了！")
+    avatar_placeholder.markdown("#### 头像设置成功！")
     
     
     # with st.spinner("#### 正在匹配聊天搭档..."):
@@ -98,7 +98,7 @@ if st.session_state.page == 1:
     st.empty()
     
     match_placeholder = st.empty()
-    match_placeholder.markdown("\n\n\n\n\n\n\n\n\n\n  ##### :red[正在为你匹配聊天搭档 ......]", unsafe_allow_html=True)
+    match_placeholder.markdown("\n\n\n\n\n\n\n\n\n\n  ##### :red[正在为你匹配其他实验被试......]", unsafe_allow_html=True)
     progress_text = ":orange[:hourglass:]"
     my_bar = st.progress(0, text=progress_text)
     
@@ -109,7 +109,7 @@ if st.session_state.page == 1:
         time.sleep(sleep_time)
         my_bar.progress(percent_complete + 1, text=progress_text)
     sucess_placeholder = st.empty()
-    sucess_placeholder.success(f"聊天搭档已匹配成功！")
+    sucess_placeholder.success(f"搭档已匹配成功！请和他共同完成实验任务。")
     
     
     
@@ -125,7 +125,7 @@ if st.session_state.page == 1:
         matched_avatar_placeholder.image(partner_avatar, width=50)
         
     with st.spinner("正在为你开启对话..."):
-        time.sleep(180)
+        time.sleep(6)
     
     # time.sleep(3)
     
@@ -190,9 +190,9 @@ elif st.session_state.page == 2:
 
 
 
-    st.sidebar.markdown("#### 请在这里复制对话编号 \n")
+    st.sidebar.markdown("#### 请先开启对话以获取对话编号 \n")
     timer_placeholder = st.sidebar.empty()
-    timer_placeholder.markdown(f"##### 请先开启对话 ",unsafe_allow_html=True)
+    # timer_placeholder.markdown(f"##### 请先开启对话 ",unsafe_allow_html=True)
 
     def refresh_timer():
         if st.session_state.first_input_time:
