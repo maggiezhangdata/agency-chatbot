@@ -17,7 +17,7 @@ print(assistant_id)
 speed = 200
 
 min_duration = 4
-max_duration = 15
+max_duration = 10
 human_speed = 120
 page2_stay = 6
 
@@ -50,7 +50,8 @@ if 'first_message_sent' not in st.session_state:
 if 'message_lock' not in st.session_state:
     st.session_state.message_lock = False
 
-
+if "session_end" not in st.session_state:
+    st.session_state.session_end = False
     
 if 'duration' not in st.session_state:
     st.session_state.duration = 0
@@ -196,13 +197,16 @@ elif st.session_state.page == 2:
 
 
     st.sidebar.markdown("#### 请先开启对话以获取对话编号 \n")
+    thred_id_placeholder = st.sidebar.empty()
     timer_placeholder = st.sidebar.empty()
     # timer_placeholder.markdown(f"##### 请先开启对话 ",unsafe_allow_html=True)
 
     def refresh_timer():
         if st.session_state.first_input_time:
             st.session_state.duration = (time.time() - st.session_state.first_input_time) / 60
-            remaining_time = min_duration - st.session_state.duration
+            remaining_time = max_duration - st.session_state.duration
+            
+            thread_id_remaining = min_duration - st.session_state.duration
             
             def format_time(minutes):
                 # convert minutes (is a float) to xx min xx sec
@@ -212,11 +216,10 @@ elif st.session_state.page == 2:
             
             if remaining_time > 0:
                 timer_placeholder.markdown(
-                    f"##### 对话编号会在<strong><span style='color: #8B0000;'> {format_time(remaining_time)} </span></strong>之后出现。\n",
+                    f"##### 对话会在<strong><span style='color: #8B0000;'> {format_time(remaining_time)} </span></strong>之后结束。\n",
                     unsafe_allow_html=True)
                 
-            else:
-                timer_placeholder.markdown("")
+            if thread_id_remaining <= 0:
                 st.session_state.show_thread_id = True
                 # st.sidebar.info(st.session_state.thread_id)
                 
@@ -425,7 +428,8 @@ elif st.session_state.page == 2:
     else:
         # st.sidebar.info(st.session_state.thread_id)
         if user_input := st.chat_input("", disabled=True):
-            st.chat_message("assistant",avatar=partner_avatar).info("时间已到。请从侧边栏复制对话编号。将对话编号粘贴到下面的文本框中。")
+            st.info("时间已到。请从侧边栏复制对话编号。将对话编号粘贴到下面的文本框中。")
+            st.session_state.session_end = True
 
         # if user_input:= st.chat_input(""):
         #     with st.chat_message("user"):
@@ -443,7 +447,9 @@ elif st.session_state.page == 2:
 
     while True:
         if st.session_state.show_thread_id:
-            st.sidebar.info(st.session_state.thread_id)
+            thred_id_placeholder.info(st.session_state.thread_id)
+        if st.session_state.session_end:
+            st.session_state.show_thread_id = False
             break
         refresh_timer()
         time.sleep(0.6)  # Adjust this value as necessary for your use case
