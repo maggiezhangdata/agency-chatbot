@@ -22,7 +22,7 @@ human_speed = 120
 page2_stay = 6
 
 partner_name = '星辰'
-bot_name = '小晨同学'
+bot_name = ''
 
 from streamlit_image_select import image_select
 # Avatar selection
@@ -188,8 +188,11 @@ elif st.session_state.page == 2:
     # Automatically send a "hello" message when the chat begins
 
     # This is where we create a placeholder for the countdown timer
-    st.sidebar.markdown("浙江大学的校园内经常出现自行车和电动车混行导致的交通混乱，尤其在上下课高峰时段，不仅影响校园的交通效率，也带来了安全隐患。假设你们是浙江大学的学生会成员，负责提出解决方案来优化校园内的非机动车交通。")
-
+    st.sidebar.markdown("你们的任务是设计一个浙江大学紫金港校区的交通优化方案。方案应包括以下三个方面：\n "
+        "1. :blue[**问题识别**]：当前校园交通系统中存在的主要问题。\n"
+        "2. :blue[**解决方案设计**]：提出切实可行的解决方案，解决识别出的主要问题。\n"
+        "3. :blue[**实施计划**]：包括优先级排序、时间表和预算估算等。\n \n"
+        "你们有5至8分钟的时间进行讨论，并得出一个优化方案。\n \n 讨论结束后，请将你们的方案提交至聊天界面下方的文本框中。", unsafe_allow_html=True)
 
 
     st.sidebar.markdown("#### 请先开启对话以获取对话编号 \n")
@@ -237,7 +240,7 @@ elif st.session_state.page == 2:
                 # st.markdown(message["content"], unsafe_allow_html=True)
                 
                 partner_input = message["content"]
-                st.markdown("<span style='color: #235789;'>" + bot_name + "：</span>" + partner_input, unsafe_allow_html=True)
+                st.markdown("<span style='color: #235789;'>机器人" + bot_name + "：</span>" + partner_input, unsafe_allow_html=True)
                 
                 
 
@@ -351,7 +354,7 @@ elif st.session_state.page == 2:
                         for char in chars:
                             displayed_message += char
                             # message_placeholder.markdown(displayed_message)
-                            message_placeholder.markdown("<span style='color: #235789;'>" + bot_name + "：</span>" + displayed_message, unsafe_allow_html=True)
+                            message_placeholder.markdown("<span style='color: #235789;'>机器人" + bot_name + "：</span>" + displayed_message, unsafe_allow_html=True)
 
                             time.sleep(delay_per_char)  # Wait for calculated delay time
                         break
