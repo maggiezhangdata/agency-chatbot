@@ -38,6 +38,9 @@ partner_avatars = ["https://ooo.0x0.ooo/2024/06/03/OJG4f6.png",
                    "https://ooo.0x0.ooo/2024/06/03/OJG4f6.png"]
 partner_avatar = partner_avatars[0]
 
+if "instruction_displayed" not in st.session_state:
+    st.session_state.instruction_displayed = False
+    
 if "thread_id" not in st.session_state:
     thread = openai.beta.threads.create()
     st.session_state.thread_id = thread.id
@@ -197,7 +200,7 @@ elif st.session_state.page == 2:
 
 
 
-    st.sidebar.markdown("#### 请先开启对话以获取对话编号 \n")
+    st.sidebar.markdown("#### 请输入“:red[你好]”开启你们的讨论！👋 \n \n 请先开启对话以获取对话编号 \n")
     thred_id_placeholder = st.sidebar.empty()
     timer_placeholder = st.sidebar.empty()
     # timer_placeholder.markdown(f"##### 请先开启对话 ",unsafe_allow_html=True)
@@ -300,7 +303,21 @@ elif st.session_state.page == 2:
         
 
             
-                
+        if user_input and not st.session_state.instruction_displayed:
+            st.session_state.instruction_displayed = True
+        
+        if not st.session_state.instruction_displayed:
+            time.sleep(2)
+            st.toast('请输入“:red[你好]”开启你们的讨论！',icon="👋")
+            time.sleep(3)
+            st.toast('请输入“:red[你好]”开启你们的讨论！',icon="👋")
+            time.sleep(3)
+            st.toast('请输入“:red[你好]”开启你们的讨论！',icon="👋")
+            time.sleep(3)
+            st.toast('请输入“:red[你好]”开启你们的讨论！',icon="👋")
+            time.sleep(3)
+            st.toast('请输入“:red[你好]”开启你们的讨论！',icon="👋")
+            time.sleep(3)        
                         
         
         
