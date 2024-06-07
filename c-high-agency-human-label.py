@@ -18,7 +18,7 @@ speed = 200
 
 min_duration = 4
 max_duration = 10
-human_speed = 120
+human_speed = 80
 page2_stay = 6
 import random
 
