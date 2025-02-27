@@ -5,7 +5,12 @@ import re  # Import regular expressions
 
 st.subheader("")
 
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+from openai import OpenAI
+
+client = OpenAI(
+    api_key=st.secrets["OPENAI_API_KEY"],
+    default_headers={"OpenAI-Beta": "assistants=v2"}
+)
 # openai.base_url = "https://api.openai.com/v1/assistants"
 openai.default_headers = {"OpenAI-Beta": "assistants=v2"}
 
@@ -67,8 +72,19 @@ if "instruction_displayed" not in st.session_state:
     st.session_state.instruction_displayed = False
     
 if "thread_id" not in st.session_state:
-    thread = openai.beta.threads.create()
-    st.session_state.thread_id = thread.id
+    try:
+        thread = client.beta.threads.create()
+        st.session_state.thread_id = thread.id
+        print(f"Created thread with ID: {thread.id}")
+    except Exception as e:
+        print(f"Error creating thread: {e}")
+        # If the first attempt fails, try recreating the client with explicit headers
+        new_client = OpenAI(
+            api_key=st.secrets["OPENAI_API_KEY"],
+            default_headers={"OpenAI-Beta": "assistants=v2"}
+        )
+        thread = new_client.beta.threads.create()
+        st.session_state.thread_id = thread.id
 
 if "show_thread_id" not in st.session_state:
     st.session_state.show_thread_id = False
@@ -374,20 +390,30 @@ elif st.session_state.page == 2:
                 while attempt < max_attempts:
                     try:
                         update_typing_animation(waiting_message, 5)  # Update typing animation
-                        # raise Exception("test")
-                        message = openai.beta.threads.messages.create(thread_id=st.session_state.thread_id,role="user",content=user_input)
-                        run = openai.beta.threads.runs.create(thread_id=st.session_state.thread_id,assistant_id=assistant_id,extra_headers = {"OpenAI-Beta": "assistants=v2"})
-                        
+                        message = client.beta.threads.messages.create(
+                            thread_id=st.session_state.thread_id,
+                            role="user",
+                            content=user_input
+                        )
+                        run = client.beta.threads.runs.create(
+                            thread_id=st.session_state.thread_id,
+                            assistant_id=assistant_id
+                        )
                         # Wait until run is complete
                         while True:
-                            run_status = openai.beta.threads.runs.retrieve(thread_id=st.session_state.thread_id,run_id=run.id)
+                            run_status = client.beta.threads.runs.retrieve(
+                                thread_id=st.session_state.thread_id,
+                                run_id=run.id
+                            )
                             if run_status.status == "completed":
                                 finish_time = time.time()
                                 break
                             dots = update_typing_animation(waiting_message, dots)  # Update typing animation
                             time.sleep(0.3) 
                         # Retrieve and display messages
-                        messages = openai.beta.threads.messages.list(thread_id=st.session_state.thread_id)
+                        messages = client.beta.threads.messages.list(
+                            thread_id=st.session_state.thread_id
+                        )
                         full_response = messages.data[0].content[0].text.value
                         
                         def delay_display(text):
